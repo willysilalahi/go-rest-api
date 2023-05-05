@@ -1,0 +1,108 @@
+====================================== CRUD MANUAL ======================================
+
+	//Create
+	book := book.Book{}
+	book.Title = "Pemrograman Golang"
+	book.Description = "Sevuah buku untuk belajar C#"
+	book.Price = 1120000
+	book.Rating = 4
+
+	err = db.Create(&book).Error
+	if err != nil {
+		panic("Error creating book data")
+	}
+
+	//GET All Book
+	var books []book.Book
+	err = db.Find(&books).Error
+	if err != nil {
+		panic("Error get all book")
+	}
+	for i, value := range books {
+		fmt.Println("Buku", i+1, "Judul :", value.Title)
+	}
+
+	//GET Single Book
+	var book book.Book
+	err = db.Find(&book, 1).Error
+	if err != nil {
+		panic("Error get single book")
+	}
+	fmt.Println(book.Title)
+
+
+	//GET All Book Using Condition
+	var books []book.Book
+	value := "catatan"
+	err = db.Where("title LIKE ?", "%"+value+"%").Find(&books).Error
+	if err != nil {
+		panic("Error get all book")
+	}
+	for i, value := range books {
+		fmt.Println("Buku", i+1, "Judul :", value.Title)
+	}
+
+
+	//Update For Single Book
+	var book = book.Book{ID: 31}
+	rows := db.First(&book).RowsAffected
+	if rows == 0 {
+		panic("Book not found, try again")
+	}
+	book.Title = "Catatan si Natan"
+	err = db.Save(&book).Error
+	if err != nil {
+		panic("Update book failed")
+	}
+	fmt.Println(book)
+
+	//Delete Book
+	var book = book.Book{ID: 3}
+	rows := db.First(&book).RowsAffected
+	if rows == 0 {
+		panic("Book not found, try again")
+	}
+	err = db.Delete(&book).Error
+	if err != nil {
+		panic("Delete book failed")
+	}
+	fmt.Println("Berhasil hapus buku!")
+ 
+
+ =========================== CRUD REPOSITORY ======================================
+	
+	// Initiate Repository
+
+	book_repo := book.NewRepository(db)
+
+
+	//Create
+	var book book.Book
+	book.Title = "Aku Anak Siapa"
+	book.Description = "Filosopi tentang anak yang broken heart"
+	book.Price = 11000
+	book.Rating = 2
+	result, msg := book_repo.Create(book)
+	if msg != nil {
+		panic(msg)
+	}
+	fmt.Println(result)
+
+	//Get ALl Book
+
+	result, msg := book_repo.FindAll()
+	if msg != nil {
+		panic(msg)
+	}
+	for _, value := range result {
+		fmt.Println(value.Title)
+	}
+
+	//Get Single Book
+
+	result, msg := book_repo.FindByID(1)
+	if msg != nil {
+		panic(msg)
+	}
+	fmt.Println(result.Title)
+	fmt.Println(result.Description)

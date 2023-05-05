@@ -1,60 +1,61 @@
 package handlers
 
 import (
-	"fmt"
 	"go-rest-api/book"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
 )
 
-func RootHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Mantap nakku, bibik bangga"})
+type bookHandler struct {
+	bookService book.Service
 }
 
-func HelloHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"name": "Calvin Server",
-		"desc": "A Server Cyber Security with tall body",
-	})
+func NewHandler(bookService book.Service) *bookHandler {
+	return &bookHandler{bookService}
 }
 
-func GetBookHandler(c *gin.Context) {
-	id := c.Param("id")
-	c.JSON(http.StatusOK, gin.H{
-		"name": "Hello Jhon",
-		"desc": "Kamu berusaha ambil buku dengan id " + id,
-	})
-}
-
-func QueryHandler(c *gin.Context) {
-	id := c.Query("id")
-	title := c.Query("title")
-	c.JSON(http.StatusOK, gin.H{
-		"name":  "Hello Jhon",
-		"id":    id,
-		"title": title,
-	})
-}
-
-func CreateBookHandler(c *gin.Context) {
-	var book book.BookInput
-	err := c.ShouldBindJSON(&book)
-
+func (h *bookHandler) GetAllBookHandler(c *gin.Context) {
+	result, err := h.bookService.FindAll()
 	if err != nil {
-		var errorMessages []string
-		for _, e := range err.(validator.ValidationErrors) {
-			error := fmt.Sprintf("Error on field %s, condition : %s", e.Field(), e.ActualTag())
-			errorMessages = append(errorMessages, error)
-		}
-		c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
+	c.JSON(http.StatusOK, result)
+}
 
-	c.JSON(http.StatusOK, gin.H{
-		"title":      book.Title,
-		"price":      book.Price,
-		"short_desc": book.ShortDesc,
-	})
+func (h *bookHandler) GetSingleBookHandler(c *gin.Context) {
+	result, err := h.bookService.FindAll()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+func (h *bookHandler) CreateBookHandler(c *gin.Context) {
+	var bookRequest book.BookRequest
+	err := c.ShouldBindJSON(&bookRequest)
+	if err != nil {
+
+	} else {
+		c.JSON(http.StatusOK, "Aman bang")
+	}
+	// if err != nil {
+	// 	var errorMessages []string
+	// 	for _, e := range err.(validator.ValidationErrors) {
+	// 		error := fmt.Sprintf("Error on field %s, condition : %s", e.Field(), e.ActualTag())
+	// 		errorMessages = append(errorMessages, error)
+	// 	}
+	// 	c.JSON(http.StatusBadRequest, gin.H{"errors": errorMessages})
+	// 	return
+	// }
+
+	// result, error := h.bookService.Create(bookRequest)
+
+	// if error != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"errors": error})
+	// 	return
+	// }
+	// c.JSON(http.StatusOK, result)
 }

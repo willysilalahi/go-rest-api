@@ -1,9 +1,12 @@
 package book
 
+import "strconv"
+
 type Service interface {
 	FindAll() ([]Book, error)
 	FindByID(id int) (Book, error)
 	Create(bookRequest BookRequest) (Book, error)
+	Update(id int, bookRequest BookRequest) (Book, error)
 }
 
 type service struct {
@@ -30,4 +33,17 @@ func (s *service) Create(bookRequest BookRequest) (Book, error) {
 		Description: bookRequest.Description,
 	}
 	return s.repository.Create(book)
+}
+
+func (s *service) Update(id int, bookRequest BookRequest) (Book, error) {
+	book, _ := s.repository.FindByID(id)
+
+	price, _ := bookRequest.Price.Int64()
+	rating, _ := strconv.Atoi(bookRequest.Rating)
+
+	book.Title = bookRequest.Title
+	book.Price = int(price)
+	book.Description = bookRequest.Description
+	book.Rating = rating
+	return s.repository.Update(book)
 }

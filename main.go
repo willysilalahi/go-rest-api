@@ -28,6 +28,8 @@ func main() {
 	v1.GET("/book", bookHandler.GetAllBookHandler)
 	v1.GET("/book/:id", bookHandler.GetSingleBookHandler)
 	v1.POST("/book", bookHandler.CreateBookHandler)
+	v1.PATCH("/book/:id", bookHandler.UpdateBookHandler)
+	v1.DELETE("/book/:id", bookHandler.DeleteBookHandler)
 
 	router.Run()
 }
